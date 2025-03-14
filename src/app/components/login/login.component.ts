@@ -40,13 +40,27 @@ export class LoginComponent {
 
   onSubmit(): void {
     this.authService.login(this.credentials).subscribe({
-      next: (user) => {
+      next: (response) => {
+        console.log('Login response:', response);
+        const user = response.user;
+        console.log('User object:', user);
         if (user.role === 'Admin') {
-          this.router.navigate(['/admin']);
+          console.log('Navigating to /admin');
+          this.router.navigate(['/admin']).then(success => {
+            console.log('Navigation success:', success); // true or false
+          });
         } else if (user.role === 'Teacher') {
-          this.router.navigate(['/teacher']);
+          console.log('Navigating to /teacher');
+          this.router.navigate(['/teacher']).then(success => {
+            console.log('Navigation success:', success);
+          });
         } else if (user.role === 'Student') {
-          this.router.navigate(['/student']);
+          console.log('Navigating to /student');
+          this.router.navigate(['/student']).then(success => {
+            console.log('Navigation success:', success);
+          });
+        } else {
+          console.log('Unknown role:', user.role);
         }
       },
       error: (err) => console.error('Login failed', err)
