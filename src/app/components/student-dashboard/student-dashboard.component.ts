@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service'; // Adjust path as needed
 
 @Component({
   selector: 'app-student-dashboard',
@@ -27,12 +28,42 @@ import { Router } from '@angular/router';
 export class StudentDashboardComponent implements OnInit {
   tests: any[] = [];
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService // Inject AuthService
+  ) {}
 
   ngOnInit(): void {
-    this.http.get<any[]>('http://localhost:5000/api/tests').subscribe(tests => {
-      this.tests = tests;
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']); // Redirect if not logged in
+      return;
+    }
+    this.loadTests(); // Call a separate method for better structure
+  }
+
+  // Helper method to get headers with token
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
     });
+  }
+
+  loadTests(): void {
+    this.http.get<any[]>('http://localhost:5000/api/tests', { headers: this.getAuthHeaders() })
+      .subscribe({
+        next: (tests) => {
+          this.tests = tests;
+          console.log('Tests loaded:', tests); // Optional: for debugging
+        },
+        error: (err) => {
+          console.error('Error loading tests:', err);
+          if (err.status === 401) {
+            this.router.navigate(['/login']); // Redirect on unauthorized
+          }
+        }
+      });
   }
 
   startTest(testId: number): void {

@@ -1,17 +1,20 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service'; // Adjust path
 
 @Component({
   selector: 'app-test-attempt',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="container mt-5">
-      <div class="row">
+      <div *ngIf="loading">Loading test...</div>
+      <div *ngIf="!loading && questions.length === 0">Test not found or unauthorized.</div>
+      <div *ngIf="!loading && questions.length > 0" class="row">
         <div class="col-md-8">
           <h3>Question {{ currentQuestionIndex + 1 }} of {{ questions.length }}</h3>
           <p>{{ questions[currentQuestionIndex].text }}</p>
@@ -53,22 +56,52 @@ export class TestAttemptComponent implements OnInit, OnDestroy {
   review: boolean[] = [];
   timeRemaining!: number; // Time in seconds
   private timerSubscription!: Subscription;
+  loading: boolean = true; // Add loading state
 
-  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService // Inject AuthService
+  ) {}
 
   ngOnInit(): void {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     this.testId = this.route.snapshot.params['id'];
     this.loadTest();
   }
 
-  loadTest(): void {
-    this.http.get<any>(`http://localhost:5000/api/tests/${this.testId}`).subscribe(test => {
-      this.questions = test.questions;
-      this.responses = new Array(this.questions.length);
-      this.review = new Array(this.questions.length).fill(false);
-      this.timeRemaining = test.duration * 60; // Convert minutes to seconds
-      this.startTimer();
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
     });
+  }
+
+  loadTest(): void {
+    this.loading = true;
+    this.http.get<any>(`http://localhost:5000/api/tests/${this.testId}`, { headers: this.getAuthHeaders() })
+      .subscribe({
+        next: (test) => {
+          this.questions = test.questions || []; // Ensure questions is an array
+          this.responses = new Array(this.questions.length);
+          this.review = new Array(this.questions.length).fill(false);
+          this.timeRemaining = test.duration * 60; // Convert minutes to seconds
+          this.startTimer();
+          this.loading = false;
+          console.log('Test loaded:', test);
+        },
+        error: (err) => {
+          console.error('Error loading test:', err);
+          this.loading = false;
+          if (err.status === 401) {
+            this.router.navigate(['/login']);
+          }
+        }
+      });
   }
 
   startTimer(): void {
@@ -111,9 +144,18 @@ export class TestAttemptComponent implements OnInit, OnDestroy {
       testId: this.testId,
       responses: this.responses
     };
-    this.http.post<any>('http://localhost:5000/api/tests/submit', submission).subscribe(result => {
-      this.router.navigate(['/student/results', result.id]);
-    });
+    this.http.post<any>('http://localhost:5000/api/tests/submit', submission, { headers: this.getAuthHeaders() })
+      .subscribe({
+        next: (result) => {
+          this.router.navigate(['/student/results', result.id]);
+        },
+        error: (err) => {
+          console.error('Error submitting test:', err);
+          if (err.status === 401) {
+            this.router.navigate(['/login']);
+          }
+        }
+      });
   }
 
   ngOnDestroy(): void {
