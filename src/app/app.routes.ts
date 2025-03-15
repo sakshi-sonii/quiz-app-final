@@ -6,7 +6,6 @@ import { StudentResultsComponent } from './components/student-results/student-re
 import { TeacherDashboardComponent } from './components/teacher-dashboard/teacher-dashboard.component';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
 import { AuthGuard } from './guards/auth.guard';
-
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { 

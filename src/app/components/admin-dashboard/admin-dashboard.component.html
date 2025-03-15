@@ -1,1 +1,122 @@
-<p>admin-dashboard works!</p>
+<div class="container">
+  <header class="dashboard-header">
+    <h1>Admin Dashboard</h1>
+    <button class="btn logout-btn" (click)="logout()">Logout</button>
+  </header>
+
+  <!-- Add Teacher Section -->
+  <section class="card-section">
+    <h2>Add New Teacher</h2>
+    <form class="teacher-form" (ngSubmit)="addTeacher()">
+      <div class="form-group">
+        <label for="teacherUsername">Username</label>
+        <input
+          type="text"
+          id="teacherUsername"
+          class="form-control"
+          [(ngModel)]="newTeacher.username"
+          name="username"
+          required
+          placeholder="Enter username"
+        >
+      </div>
+      <div class="form-group">
+        <label for="teacherPassword">Password</label>
+        <input
+          type="password"
+          id="teacherPassword"
+          class="form-control"
+          [(ngModel)]="newTeacher.password"
+          name="password"
+          required
+          placeholder="Enter password"
+        >
+      </div>
+      <button type="submit" class="btn btn-primary">Add Teacher</button>
+    </form>
+  </section>
+
+  <!-- Teachers List Section -->
+  <section class="card-section">
+    <h2>Manage Teachers</h2>
+    <div class="toolbar">
+      <input
+        type="text"
+        class="form-control search-bar"
+        [(ngModel)]="teacherSearch"
+        (ngModelChange)="filterTeachers()"
+        placeholder="Search teachers..."
+      >
+      <div class="bulk-actions">
+        <button class="btn btn-secondary" (click)="exportTeachers()" [disabled]="filteredTeachers.length === 0">
+          Export to CSV
+        </button>
+        <button class="btn btn-warning" (click)="bulkToggleStatus(true)" [disabled]="selectedTeachers.length === 0">
+          Activate Selected
+        </button>
+        <button class="btn btn-warning" (click)="bulkToggleStatus(false)" [disabled]="selectedTeachers.length === 0">
+          Deactivate Selected
+        </button>
+      </div>
+    </div>
+    <div class="teachers-grid">
+      <div class="teacher-card" *ngFor="let teacher of filteredTeachers">
+        <input type="checkbox" [(ngModel)]="teacher.selected" (change)="updateSelectedTeachers()">
+        <h3 (click)="toggleTeacherDetails(teacher.id)">{{ teacher.username }}</h3>
+        <p>Status: 
+          <span [ngClass]="teacher.active ? 'status-active' : 'status-inactive'">
+            {{ teacher.active ? 'Active' : 'Inactive' }}
+          </span>
+        </p>
+        <div class="teacher-actions">
+          <button class="btn btn-toggle" (click)="toggleTeacherStatus(teacher.id, teacher.active)">
+            {{ teacher.active ? 'Deactivate' : 'Activate' }}
+          </button>
+          <button class="btn btn-danger" (click)="deleteTeacher(teacher.id)">Delete</button>
+        </div>
+        <div class="teacher-details" *ngIf="selectedTeacherId === teacher.id">
+          <p>Email: {{ teacher.email || 'Not provided' }}</p>
+          <p>Last Login: {{ teacher.lastLogin ? (teacher.lastLogin | date:'medium') : 'Never' }}</p>
+          <p>Total Tests Assigned: {{ teacher.testsAssigned || 0 }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Enhanced Analytics Section -->
+  <section class="card-section analytics-section">
+    <h2>Performance Analytics</h2>
+    <div class="analytics-grid">
+      <div class="analytics-card">
+        <h3>Average Score</h3>
+        <p>{{ analytics.averageScore | number:'1.2-2' }}%</p>
+      </div>
+      <div class="analytics-card">
+        <h3>Total Teachers</h3>
+        <p>{{ analytics.totalTeachers }}</p>
+      </div>
+      <div class="analytics-card">
+        <h3>Total Students</h3>
+        <p>{{ analytics.totalStudents }}</p>
+      </div>
+      <div class="analytics-card">
+        <h3>Active Teachers</h3>
+        <p>{{ analytics.activeTeachers }}</p>
+      </div>
+    </div>
+    <div class="charts-container">
+      <div class="chart-card">
+        <h3>Score Distribution</h3>
+        <canvas #barChartCanvas></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Teacher Activity (Last 30 Days)</h3>
+        <canvas #lineChartCanvas></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Performance by Category</h3>
+        <canvas #pieChartCanvas></canvas>
+      </div>
+    </div>
+  </section>
+</div>
