@@ -35,7 +35,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   @ViewChild('pieChartCanvas') pieChartCanvas!: ElementRef<HTMLCanvasElement>;
 
   private barChart!: Chart<'bar'>;
-  private lineChart!: Chart<'bar'>; // Changed to bar chart
+  private lineChart!: Chart<'bar'>;
   private pieChart!: Chart<'pie'>;
 
   constructor(
@@ -64,7 +64,9 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
       this.router.navigate(['/login']);
       return new HttpHeaders();
     }
-    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return new HttpHeaders()
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json'); // Explicitly set Content-Type
   }
 
   loadTeachers(): void {
@@ -90,7 +92,6 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   }
 
   setupCharts(): void {
-    // Bar Chart: Score Distribution (Percentage-based)
     if (this.barChartCanvas) {
       this.barChart = new Chart(this.barChartCanvas.nativeElement, {
         type: 'bar',
@@ -112,7 +113,6 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
       });
     }
 
-    // Bar Chart: Teacher Activity (Tests per Teacher)
     if (this.lineChartCanvas) {
       this.lineChart = new Chart(this.lineChartCanvas.nativeElement, {
         type: 'bar',
@@ -134,7 +134,6 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
       });
     }
 
-    // Pie Chart: Performance by Category
     if (this.pieChartCanvas) {
       this.pieChart = new Chart(this.pieChartCanvas.nativeElement, {
         type: 'pie',
@@ -161,6 +160,11 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   }
 
   addTeacher(): void {
+    if (!this.newTeacher.username || !this.newTeacher.password) {
+      alert('Please enter both username and password');
+      return;
+    }
+    console.log('Adding teacher:', this.newTeacher); // Debug log
     const headers = this.getAuthHeaders();
     this.http.post('http://localhost:5000/api/admin/teachers', this.newTeacher, { headers }).subscribe({
       next: () => {
@@ -266,6 +270,8 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
 
   private handleError(err: HttpErrorResponse, message: string): void {
     console.error(`${message}:`, err);
+    console.log('Server response:', err.error); // Detailed server error
+    alert(`Error: ${err.error?.message || err.message}`); // Show user the error
     if (err.status === 401) {
       this.authService.logout();
       this.router.navigate(['/login']);
@@ -273,6 +279,6 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   }
 
   private showSuccess(message: string): void {
-    alert(message); // Replace with a toast notification library in production
+    alert(message); // Replace with toast in production
   }
 }

@@ -32,7 +32,13 @@
           placeholder="Enter password"
         >
       </div>
-      <button type="submit" class="btn btn-primary">Add Teacher</button>
+      <button 
+        type="submit" 
+        class="btn btn-primary" 
+        [disabled]="!newTeacher.username || !newTeacher.password"
+      >
+        Add Teacher
+      </button>
     </form>
   </section>
 
