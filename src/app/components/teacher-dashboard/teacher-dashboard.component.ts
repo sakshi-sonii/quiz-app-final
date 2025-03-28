@@ -24,28 +24,6 @@ import Chart from 'chart.js/auto';
         </div>
       </div>
 
-      <!-- Create Test Form -->
-      <div class="card mb-4">
-        <div class="card-body">
-          <h4>Create New Test</h4>
-          <form (ngSubmit)="createTest()">
-            <div class="form-group">
-              <label for="testTitle">Test Title</label>
-              <input id="testTitle" class="form-control" [(ngModel)]="newTest.title" name="title" required>
-            </div>
-            <div class="form-group">
-              <label for="testDuration">Duration (minutes)</label>
-              <input id="testDuration" type="number" class="form-control" [(ngModel)]="newTest.duration" name="duration" required min="1">
-            </div>
-            <div class="form-group">
-              <label for="testCategory">Category</label>
-              <input id="testCategory" class="form-control" [(ngModel)]="newTest.category" name="category">
-            </div>
-            <button type="submit" class="btn btn-primary mt-2" [disabled]="!newTest.title || !newTest.duration">Create Test</button>
-          </form>
-          <p class="mt-2">Note: After creation, edit the test to add questions.</p>
-        </div>
-      </div>
 
       <!-- Upload Test -->
       <div class="mb-4">
@@ -54,35 +32,7 @@ import Chart from 'chart.js/auto';
         <button class="btn btn-primary mt-2" (click)="uploadFile('test')" [disabled]="!selectedTestFile">Upload</button>
       </div>
 
-      <!-- Upload Course Material -->
-      <div class="card mb-4">
-        <div class="card-body">
-          <h4>Upload Course Material</h4>
-          <form (ngSubmit)="uploadMaterial()">
-            <div class="form-group">
-              <label for="materialTitle">Title</label>
-              <input id="materialTitle" class="form-control" [(ngModel)]="newMaterial.title" name="title" required>
-            </div>
-            <div class="form-group">
-              <label for="materialCourse">Course</label>
-              <input id="materialCourse" class="form-control" [(ngModel)]="newMaterial.course" name="course" required>
-            </div>
-            <div class="form-group">
-              <label for="materialCategory">Category</label>
-              <input id="materialCategory" class="form-control" [(ngModel)]="newMaterial.category" name="category" required>
-            </div>
-            <div class="form-group">
-              <label for="materialTopic">Topic</label>
-              <input id="materialTopic" class="form-control" [(ngModel)]="newMaterial.topic" name="topic" required>
-            </div>
-            <div class="form-group">
-              <label for="materialFile">File (PDF/DOCX)</label>
-              <input id="materialFile" type="file" class="form-control" (change)="onFileSelected($event, 'material')" accept=".pdf,.docx" required>
-            </div>
-            <button type="submit" class="btn btn-primary mt-2" [disabled]="!newMaterial.title || !newMaterial.course || !newMaterial.category || !newMaterial.topic || !selectedMaterialFile">Upload Material</button>
-          </form>
-        </div>
-      </div>
+      
 
       <!-- Manage Tests -->
       <h4>Manage Tests</h4>
@@ -131,15 +81,172 @@ import Chart from 'chart.js/auto';
     </div>
   `,
   styles: [`
-    .container { max-width: 1200px; }
-    .card { box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .chart-container { position: relative; height: 400px; width: 100%; margin-bottom: 20px; }
-    .btn-primary { background-color: #007bff; border: none; }
-    .btn-warning { background-color: #ffc107; border: none; }
-    .btn-danger { background-color: #dc3545; border: none; }
-    .btn-info { background-color: #17a2b8; border: none; }
-    .btn-secondary { background-color: #6c757d; border: none; }
-    .form-group { margin-bottom: 1rem; }
+    /* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+body {
+    background-color: #f4f7f6;
+    font-family: 'Inter', sans-serif;
+    color: #2c3e50;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+}
+
+h1 {
+    color: #3498db;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 600;
+    border-bottom: 3px solid #3498db;
+    padding-bottom: 0.5rem;
+}
+
+.card {
+    background-color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-control {
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    padding: 0.75rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.btn {
+    border-radius: 6px;
+    padding: 0.625rem 1.25rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+.btn-warning {
+    background-color: #f39c12;
+    border-color: #f39c12;
+    color: white;
+}
+
+.btn-warning:hover {
+    background-color: #d35400;
+    border-color: #d35400;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+    border-color: #c0392b;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    border-color: #95a5a6;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+    border-color: #7f8c8d;
+}
+
+.btn-success {
+    background-color: #2ecc71;
+    border-color: #2ecc71;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.chart-container {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+label {
+    font-weight: 600;
+    color: #34495e;
+    margin-bottom: 0.5rem;
+}
+
+input[type="file"] {
+    border: 1px dashed #bdc3c7;
+    border-radius: 6px;
+    padding: 0.75rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background-color: white;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #e0e0e0;
+    }
+}
   `]
 })
 export class TeacherDashboardComponent implements OnInit, AfterViewInit {

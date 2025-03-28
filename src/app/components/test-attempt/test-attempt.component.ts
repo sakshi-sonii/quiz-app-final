@@ -46,7 +46,180 @@ import { AuthService } from '../../services/auth.service'; // Adjust path
         </div>
       </div>
     </div>
-  `
+  `,
+  styles:`
+  /* Extending the previous design with specific test-taking styles */
+body {
+    background-color: #f4f7f6;
+    font-family: 'Inter', sans-serif;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+}
+
+/* Loading and Error States */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    font-size: 1.5rem;
+    color: #3498db;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* Question Styling */
+h3 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.5rem;
+}
+
+.form-check {
+    margin-bottom: 1rem;
+    background-color: #f8f9fa;
+    padding: 0.75rem;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.form-check:hover {
+    background-color: #e9ecef;
+}
+
+.form-check-input {
+    margin-right: 1rem;
+}
+
+.form-check-label {
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.form-check-input:checked + .form-check-label {
+    color: #3498db;
+    font-weight: 600;
+}
+
+/* Question Navigation Card */
+.question-navigation-card {
+    position: sticky;
+    top: 2rem;
+}
+
+.question-nav-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.question-nav-buttons .btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+/* Button Styles */
+.btn-navigation {
+    background-color: #ecf0f1;
+    color: #2c3e50;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-navigation:hover {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-current {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-answered {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.btn-review {
+    background-color: #f39c12;
+    color: white;
+}
+
+/* Time Remaining */
+.time-remaining {
+    color: #e74c3c;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+/* Submit Button */
+.btn-submit {
+    background-color: #2ecc71;
+    border-color: #2ecc71;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+    background-color: #27ae60;
+    border-color: #27ae60;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .question-nav-buttons {
+        justify-content: center;
+    }
+    
+    .question-navigation-card {
+        position: static;
+        margin-top: 1rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background-color: white;
+    }
+    
+    .container {
+        box-shadow: none;
+    }
+}`
 })
 export class TestAttemptComponent implements OnInit, OnDestroy {
   testId!: number;

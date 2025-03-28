@@ -46,23 +46,6 @@ import Chart from 'chart.js/auto';
       </div>
       <ng-template #noTests><p>No available tests at this time.</p></ng-template>
 
-      <!-- Course Lectures/Notes -->
-      <h2>Course Materials</h2>
-      <div class="row" *ngIf="courseMaterials.length > 0; else noMaterials">
-        <div class="col-md-6" *ngFor="let material of courseMaterials">
-          <div class="card mb-3">
-            <div class="card-body">
-              <h5 class="card-title">{{ material.title }}</h5>
-              <p class="card-text">Teacher: {{ material.teacher }}</p>
-              <p class="card-text">Course: {{ material.course }}</p>
-              <p class="card-text">Category: {{ material.category }}</p>
-              <p class="card-text">Topic: {{ material.topic }}</p>
-              <a [href]="material.fileUrl" target="_blank" class="btn btn-info">Download</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <ng-template #noMaterials><p>No course materials available.</p></ng-template>
 
       <!-- Recent Results -->
       <h2>Recent Results</h2>
